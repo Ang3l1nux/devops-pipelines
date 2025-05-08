@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastro de Pessoas</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Cadastro de Pessoas</h1>
+  <form id="formPessoa">
+    <input type="text" placeholder="Nome" id="nome" required />
+    <input type="text" placeholder="CPF" id="cpf" required />
+    <input type="date" id="nascimento" required />
+    <button type="submit">Cadastrar</button>
+  </form>
+
+  <h2>Lista de Pessoas</h2>
+  <ul id="listaPessoas"></ul>
+
+  <script src="app.js"></script>
+</body>
+</html>

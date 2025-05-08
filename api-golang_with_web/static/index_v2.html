@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastro de Pessoas</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    input, button { margin: 0.2rem; padding: 0.4rem; }
+    .pessoa { margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Cadastro de Pessoas</h1>
+
+  <form id="formPessoa">
+    <input type="text" id="nome" placeholder="Nome" required />
+    <input type="text" id="cpf" placeholder="CPF" required />
+    <input type="date" id="nascimento" required />
+    <button type="submit">Cadastrar</button>
+  </form>
+
+  <h2>Buscar Pessoa</h2>
+  <input type="text" id="busca" placeholder="Nome ou CPF" />
+  <button onclick="buscarPessoa()">Buscar</button>
+
+  <div id="resultadoBusca" class="pessoa"></div>
+
+  <script>
+    async function buscarPessoa() {
+      const termo = document.getElementById('busca').value.trim().toLowerCase();
+      const res = await fetch('/api/pessoas');
+      const pessoas = await res.json();
+
+      const resultado = pessoas.find(p =>
+        p.nome.toLowerCase().includes(termo) || p.cpf.includes(termo)
+      );
+
+      const container = document.getElementById('resultadoBusca');
+      container.innerHTML = '';
+
+      if (resultado) {
+        const div = document.createElement('div');
+        div.textContent = `${resultado.nome} (${resultado.cpf}) - ${resultado.nascimento}`;
+        const btn = document.createElement('button');
+        btn.textContent = 'Excluir';
+        btn.onclick = async () => {
+          await fetch('/api/pessoas/' + resultado.id, { method: 'DELETE' });
+          container.innerHTML = 'Pessoa excluída.';
+        };
+        div.appendChild(btn);
+        container.appendChild(div);
+      } else {
+        container.textContent = 'Nenhuma pessoa encontrada.';
+      }
+    }
+
+    document.getElementById('formPessoa').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nome = document.getElementById('nome').value;
+      const cpf = document.getElementById('cpf').value;
+      const nascimento = document.getElementById('nascimento').value;
+
+      const res = await fetch('/api/pessoas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, cpf, nascimento })
+      });
+
+      if (res.ok) {
+        alert("Pessoa cadastrada!");
+        e.target.reset();
+      } else {
+        alert("Erro ao cadastrar.");
+      }
+    });
+  </script>
+</body>
+</html>
